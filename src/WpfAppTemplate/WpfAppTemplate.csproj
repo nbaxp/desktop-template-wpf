@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HelixToolkit.Core.Wpf" Version="2.22.0" />
     <PackageReference Include="HelixToolkit.SharpDX.Assimp" Version="2.22.0" />
     <PackageReference Include="HelixToolkit.SharpDX.Core.Wpf" Version="2.22.0" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.401" />
