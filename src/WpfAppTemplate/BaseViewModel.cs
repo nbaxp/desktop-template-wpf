@@ -1,4 +1,5 @@
 ﻿using HelixToolkit.SharpDX.Core;
+using HelixToolkit.SharpDX.Core.Model;
 using HelixToolkit.Wpf.SharpDX;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ public abstract class BaseViewModel : ObservableObject, IDisposable
         }
         set
         {
-            SetValue(ref title, value, "Title");
+            Set(ref title, value, "Title");
         }
     }
 
@@ -39,7 +40,7 @@ public abstract class BaseViewModel : ObservableObject, IDisposable
         }
         set
         {
-            SetValue(ref subTitle, value, "SubTitle");
+            Set(ref subTitle, value, "SubTitle");
         }
     }
 
@@ -53,7 +54,7 @@ public abstract class BaseViewModel : ObservableObject, IDisposable
         }
         set
         {
-            if (SetValue(ref cameraModel, value, "CameraModel"))
+            if (Set(ref cameraModel, value, "CameraModel"))
             {
                 OnCameraModelChanged();
             }
@@ -69,10 +70,10 @@ public abstract class BaseViewModel : ObservableObject, IDisposable
 
         protected set
         {
-            SetValue(ref camera, value, "Camera");
+            Set(ref camera, value, "Camera");
             CameraModel = value is PerspectiveCamera
                                    ? Perspective
-                                   : value is OrthographicCamera ? Orthographic : null;
+                                   : Orthographic;
         }
     }
 
@@ -83,7 +84,7 @@ public abstract class BaseViewModel : ObservableObject, IDisposable
         get { return effectsManager; }
         protected set
         {
-            SetValue(ref effectsManager, value);
+            Set(ref effectsManager, value);
         }
     }
 

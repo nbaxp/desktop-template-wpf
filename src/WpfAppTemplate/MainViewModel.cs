@@ -1,12 +1,3 @@
-﻿using HelixToolkit.SharpDX.Core;
-using HelixToolkit.SharpDX.Core.Animations;
-using HelixToolkit.SharpDX.Core.Assimp;
-using HelixToolkit.SharpDX.Core.Model;
-using HelixToolkit.SharpDX.Core.Model.Scene;
-using HelixToolkit.Wpf.SharpDX;
-using HelixToolkit.Wpf.SharpDX.Controls;
-using Microsoft.Win32;
-using SharpDX;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -15,7 +6,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using HelixToolkit.SharpDX.Core;
+using HelixToolkit.SharpDX.Core.Animations;
+using HelixToolkit.SharpDX.Core.Assimp;
+using HelixToolkit.SharpDX.Core.Model;
+using HelixToolkit.SharpDX.Core.Model.Scene;
+using HelixToolkit.Wpf.SharpDX;
+using HelixToolkit.Wpf.SharpDX.Controls;
+using SharpDX;
 using Point3D = System.Windows.Media.Media3D.Point3D;
+using Vector3D = System.Windows.Media.Media3D.Vector3D;
+using Transform3D = System.Windows.Media.Media3D.Transform3D;
+using Color = System.Windows.Media.Color;
+using System.Windows.Media;
+using System.IO;
 
 namespace WpfAppTemplate;
 
@@ -27,7 +31,7 @@ public class MainViewModel : BaseViewModel
     {
         set
         {
-            if (SetValue(ref showWireframe, value))
+            if (Set(ref showWireframe, value))
             {
                 ShowWireframeFunct(value);
             }
@@ -44,7 +48,7 @@ public class MainViewModel : BaseViewModel
     {
         set
         {
-            if (SetValue(ref renderFlat, value))
+            if (Set(ref renderFlat, value))
             {
                 RenderFlatFunct(value);
             }
@@ -61,7 +65,7 @@ public class MainViewModel : BaseViewModel
     {
         set
         {
-            if (SetValue(ref renderEnvironmentMap, value) && scene != null && scene.Root != null)
+            if (Set(ref renderEnvironmentMap, value) && scene != null && scene.Root != null)
             {
                 foreach (var node in scene.Root.Traverse())
                 {
@@ -90,7 +94,7 @@ public class MainViewModel : BaseViewModel
 
     public bool IsLoading
     {
-        private set => SetValue(ref isLoading, value);
+        private set => Set(ref isLoading, value);
         get => isLoading;
     }
 
@@ -100,7 +104,7 @@ public class MainViewModel : BaseViewModel
     {
         set
         {
-            if (SetValue(ref enableAnimation, value))
+            if (Set(ref enableAnimation, value))
             {
                 if (value)
                 {
@@ -125,7 +129,7 @@ public class MainViewModel : BaseViewModel
     {
         set
         {
-            if (SetValue(ref selectedAnimation, value))
+            if (Set(ref selectedAnimation, value))
             {
                 StopAnimation();
                 if (value != null)
@@ -157,7 +161,7 @@ public class MainViewModel : BaseViewModel
     {
         set
         {
-            if (SetValue(ref speed, value))
+            if (Set(ref speed, value))
             {
                 if (animationUpdater != null)
                     animationUpdater.Speed = value;
@@ -170,7 +174,7 @@ public class MainViewModel : BaseViewModel
 
     public Point3D ModelCentroid
     {
-        private set => SetValue(ref modelCentroid, value);
+        private set => Set(ref modelCentroid, value);
         get => modelCentroid;
     }
 
@@ -178,7 +182,7 @@ public class MainViewModel : BaseViewModel
 
     public BoundingBox ModelBound
     {
-        private set => SetValue(ref modelBound, value);
+        private set => Set(ref modelBound, value);
         get => modelBound;
     }
 
@@ -206,7 +210,7 @@ public class MainViewModel : BaseViewModel
             (Camera as OrthographicCamera).NearPlaneDistance = 0.1f;
         });
 
-        EnvironmentMap = TextureModel.Create("Cubemap_Grandcanyon.dds");
+        EnvironmentMap = TextureModel.Create("texture.jpg");
     }
 
     public void LoadFile(string path)
@@ -223,12 +227,12 @@ public class MainViewModel : BaseViewModel
             if (scene.Root.TryGetBound(out var bound))
             {
                 /// Must use UI thread to set value back.
-                syncContext.Post((o) => { ModelBound = bound; }, null);
+                syncContext?.Post((o) => { ModelBound = bound; }, null);
             }
             if (scene.Root.TryGetCentroid(out var centroid))
             {
                 /// Must use UI thread to set value back.
-                syncContext.Post((o) => { ModelCentroid = centroid.ToPoint3D(); }, null);
+                syncContext?.Post((o) => { this.ModelCentroid = centroid.ToPoint3D(); }, null);
             }
             return scene;
         }).ContinueWith((result) =>
@@ -243,7 +247,9 @@ public class MainViewModel : BaseViewModel
                 Task.Run(() =>
                 {
                     foreach (var node in oldNode)
-                    { node.Dispose(); }
+                    {
+                        node.Dispose();
+                    }
                 });
                 if (scene != null)
                 {
@@ -298,7 +304,7 @@ public class MainViewModel : BaseViewModel
         compositeHelper.Rendering -= CompositeHelper_Rendering;
     }
 
-    private void CompositeHelper_Rendering(object sender, System.Windows.Media.RenderingEventArgs e)
+    private void CompositeHelper_Rendering(object? sender, System.Windows.Media.RenderingEventArgs e)
     {
         if (animationUpdater != null)
         {
@@ -317,21 +323,6 @@ public class MainViewModel : BaseViewModel
         {
             orthCam.Width = maxWidth;
         }
-    }
-
-    private string OpenFileDialog(string filter)
-    {
-        var d = new OpenFileDialog();
-        d.CustomPlaces.Clear();
-
-        d.Filter = filter;
-
-        if (!d.ShowDialog().Value)
-        {
-            return null;
-        }
-
-        return d.FileName;
     }
 
     private void ShowWireframeFunct(bool show)

@@ -19,13 +19,15 @@
         </StatusBar>
         <TabControl DockPanel.Dock="Top">
             <TabItem Header="图表">
-                <lvc:CartesianChart x:Name="lvc" Series="{Binding Series}" />
+                <lvc:CartesianChart x:Name="lvc" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}"  />
             </TabItem>
             <TabItem Header="模型">
                 <hx:Viewport3DX
                     x:Name="view"
                     Grid.Row="1"
+                    Background="#ffffff"
                     BackgroundColor="#ffffff"
+                    BelongsToParentWindow="False"
                     Camera="{Binding Camera}"
                     DockPanel.Dock="Top"
                     EffectsManager="{Binding EffectsManager}"
@@ -54,17 +56,18 @@
                     </hx:Viewport3DX.InputBindings>
                     <hx:AmbientLight3D Color="#ffffff" />
                     <hx:DirectionalLight3D Direction="{Binding Camera.LookDirection}" Color="#FFFFFF" />
-                    <hx:EnvironmentMap3D IsRendering="{Binding RenderEnvironmentMap}" Texture="{Binding EnvironmentMap}" />
+                    <!--<hx:EnvironmentMap3D IsRendering="{Binding RenderEnvironmentMap}" Texture="{Binding EnvironmentMap}" />-->
                     <hx:Element3DPresenter Content="{Binding GroupModel}" />
                     <hx:PostEffectMeshBorderHighlight EffectName="highlight" />
                 </hx:Viewport3DX>
             </TabItem>
             <TabItem Header="SerialPort">
-                <Button
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Click="Button_Click"
-                    Content="串口" />
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="串口" />
+                        <ComboBox x:Name="spList" />
+                    </StackPanel>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </DockPanel>

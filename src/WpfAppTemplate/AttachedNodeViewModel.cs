@@ -1,4 +1,5 @@
 ﻿using HelixToolkit.SharpDX.Core;
+using HelixToolkit.SharpDX.Core.Model;
 using HelixToolkit.SharpDX.Core.Model.Scene;
 
 namespace WpfAppTemplate;
@@ -11,11 +12,11 @@ public class AttachedNodeViewModel : ObservableObject
     {
         set
         {
-            if (SetValue(ref selected, value))
+            if (Set(ref selected, value))
             {
                 if (node is MeshNode m)
                 {
-                    m.PostEffects = value ? $"highlight[color:#FFFF00]" : "";
+                    m.PostEffects = value ? $"highlight[color:#FFFF00]" : ""; 
                     foreach (var n in node.TraverseUp())
                     {
                         if (n.Tag is AttachedNodeViewModel vm)
@@ -33,7 +34,7 @@ public class AttachedNodeViewModel : ObservableObject
 
     public bool Expanded
     {
-        set => SetValue(ref expanded, value);
+        set => Set(ref expanded, value); 
         get => expanded;
     }
 

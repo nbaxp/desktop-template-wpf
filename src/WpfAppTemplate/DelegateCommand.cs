@@ -31,7 +31,7 @@ public class DelegateCommand : ICommand
         this.canExecute = canExecute;
     }
 
-    public event EventHandler CanExecuteChanged
+    public event EventHandler? CanExecuteChanged
     {
         add
         {
@@ -55,12 +55,12 @@ public class DelegateCommand : ICommand
         CommandManager.InvalidateRequerySuggested();
     }
 
-    public bool CanExecute(object parameter)
+    public bool CanExecute(object? parameter)
     {
         return canExecute == null ? true : canExecute();
     }
 
-    public void Execute(object parameter)
+    public void Execute(object? parameter)
     {
         execute();
     }
